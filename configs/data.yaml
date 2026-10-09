@@ -1,0 +1,23 @@
+# Источники данных. Сами данные в репозиторий не входят (CC BY-SA 4.0; п. 9.2 Положения) — скачиваются `make data`.
+sberindex:
+  url: https://www.sberbank.com/common/img/uploaded/files/pdf/sberindex/hackathonlicence.zip
+  sha256: a9f932ff4096a7df797d1547987937f34d3995ac445b4748177114488d12b010
+  archive: data/raw/hackathonlicence.zip
+  extract_to: data/raw            # имена файлов внутри архива в cp866
+  files:
+    consumption: data/raw/hackathonlicence/consumption.parquet
+    market_access: data/raw/hackathonlicence/market_access.parquet
+    connection: data/raw/hackathonlicence/connection.parquet
+municipal_dict:                   # «Границы и изменения МО», СберИндекс, CC BY-SA 4.0
+  url: https://www.sberbank.com/common/files/t_dict_municipal.rar
+  archive: data/external/t_dict_municipal.rar
+  extract_to: data/external/t_dict_municipal
+  xlsx: data/external/t_dict_municipal/t_dict_municipal_districts.xlsx
+  gpkg: data/external/t_dict_municipal/t_dict_municipal_districts_poly.gpkg
+rosstat_bdmo:                     # Росстат БДМО через каталог «Если быть точным» (tochno.st/datasets/bdmo)
+  base: https://storage.yandexcloud.net/tochno-st-catalog/Rosstat/data_bdmo_118_v20260928/indicators
+  dir: data/external/rosstat
+  indicators:
+    population: section31/data_Y48112027_112_v20260928.zip   # численность населения на 1 января
+    employees:  section32/data_Y48423005_112_v20260928.zip   # среднесписочная численность работников по ОКВЭД2
+    wages:      section32/data_Y48423007_112_v20260928.zip   # среднемесячная зарплата по ОКВЭД2

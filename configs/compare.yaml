@@ -1,0 +1,12 @@
+# Сравнение методов (src/pulsar/compare.py)
+seed: 42
+perm:
+  n_perm: 60              # перестановок меток на (метод, месяц) при K = k_fixed: z и p для всех 24 месяцев
+  n_perm_k: 50             # перестановок при выборе K (меньше — сетка K × методы × месяцы)
+  months_for_k: ["2023-06", "2023-12", "2024-06", "2024-12"]   # подвыборка месяцев для выбора K
+config_null:
+  n_rep: 30                # перестановок рёбер с сохранением степеней (configuration model)
+  months: ["2023-12", "2024-06"]
+ablation:
+  layers: [behaviour, comovement, gravity]   # слитый (primary) слой добавляется автоматически
+  methods: [spectral, leiden, kefrin_balanced]   # методы, использующие граф; k-means/Ward от графа не зависят

@@ -1,0 +1,37 @@
+# География МО для лендинга (src/pulsar/geo.py). Каждый параметр — с фразой «зачем».
+year: 2024                  # версия границ: year_from ≤ 2024 < year_to; у МО без действующей версии — последняя
+
+inputs:
+  gpkg: data/external/t_dict_municipal/t_dict_municipal_districts_poly.gpkg
+  layer: t_dict_municipal_districts_poly
+  panel: outputs/features/panel.parquet   # только МО из панели (2190), атрибуты: имя, регион, тип, in_panel
+
+crs_metric: "+proj=aea +lat_1=52 +lat_2=64 +lat_0=0 +lon_0=100 +datum=WGS84 +units=m +no_defs"  # Альберс для России (benchmarks §6.1)
+
+simplify:
+  tolerance_m: 1000         # компромисс: GeoJSON 4.1 МБ / TopoJSON 2.1 МБ (цели ≤ 6 / ≤ 2.5), очертания районов видны при зуме на регион
+  min_island_km2: 5         # острова < 5 км² убираем (кроме крупнейшей части МО) — визуальный мусор у побережья, веса почти не экономит
+  regions_tolerance_m: null # контур регионов = dissolve уже упрощённых МО → совпадает с их рёбрами; отдельного упрощения не нужно
+  size_report_tolerances: [500, 1000, 2000]   # `python -m pulsar.geo --sizes`
+  # замеры (2190 МО, острова < 5 км², 3 знака, 5 свойств): 500 м → 6.93 МБ geojson / 2.79 МБ topojson, 397 тыс. вершин;
+  # 1000 м → 4.13 / 2.09 МБ, 223 тыс.; 2000 м → 2.45 / 1.65 МБ, 119 тыс.
+
+export:
+  precision: 3              # 0.001° ≈ 55 м по долготе на 60° с.ш. — ниже допуска упрощения, дальше знаки только раздувают файл
+  topo_quantize: 100000     # квантование TopoJSON: 360°/1e5 ≈ 0.0036° ≈ 200 м — незаметно при допуске 1000 м
+
+cities_detail:              # внутригородские территории Москвы/СПб (247 шт.) на общей карте нечитаемы → отдельный детальный слой для врезки
+  regions: ["Москва", "Санкт-Петербург"]
+  tolerance_m: 100
+
+outputs:
+  dir: outputs/site
+  files:
+    mo_geojson: mo.geojson
+    mo_topojson: mo.topojson
+    regions_geojson: regions.geojson
+    centroids_csv: centroids.csv
+    cities_geojson: mo_cities.geojson
+    preview_map: preview_map.png
+    preview_moscow: preview_moscow.png
+    preview_cities: preview_cities.png

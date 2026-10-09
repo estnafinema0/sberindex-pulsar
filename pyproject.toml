@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pulsar-sberindex"
+version = "0.1.0"
+description = "Динамическая атрибутированная сеть муниципальных образований по данным СберИндекса (конкурс СберИндекса 2026, трек «Кластеризация»)"
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "MIT"}
+dynamic = ["dependencies"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["pulsar"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::RuntimeWarning"]

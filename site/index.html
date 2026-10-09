@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Типы локальных экономик России – Pulsar</title>
+  <meta name="description" content="Типология муниципальных образований России по безналичным тратам (данные СберИндекса, 2023–2024): карта с неопределённостью, паспорта типов, динамика переходов, сравнение методов.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Ccircle cx=%278%27 cy=%278%27 r=%278%27 fill=%27%2308A652%27/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=14">
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@3.7.0/plotly.min.js" charset="utf-8"></script>
+</head>
+<body>
+<div id="mock-banner" class="mock-banner" hidden>Демонстрационные (мок) данные – числа и имена условные</div>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="brand" href="#top">Pulsar</a>
+    <nav class="toc" aria-label="Оглавление">
+      <a href="#top">Обзор</a>
+      <a href="#map-section">Карта</a>
+      <a href="#types">Типы</a>
+      <a href="#dynamics">Динамика</a>
+      <a href="#methods">Методы</a>
+      <a href="#cases">Кейсы</a>
+      <a href="#about-method">О методе</a>
+    </nav>
+    <div class="top-actions">
+      <a class="pill pill-light" href="docs/report.pdf" data-pdf>Отчёт PDF</a>
+      <a class="pill pill-dark" href="https://github.com/estnafinema0/sberindex-pulsar">Код на GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+    <!-- 1. Шапка -->
+    <section id="top" class="hero">
+      <div class="hero-media"><img onerror="this.style.visibility='hidden'" src="img/hero.webp" width="1536" height="768" alt="Тёмная 3D-сцена: стеклянные салатовые узлы сети на тёмном фоне"></div>
+      <div class="hero-text">
+        <p class="eyebrow">Проект Pulsar для конкурса СберИндекса, трек «Кластеризация»</p>
+        <h1>Типы локальных экономик России по безналичным тратам</h1>
+        <p class="task">Как устроены и как меняются экономики 2 016 муниципальных образований в 2023–2024 гг.</p>
+        <p class="lede">Каждое муниципальное образование получает тип по структуре и уровню безналичных трат жителей – отдельно в каждом месяце 2023–2024 гг. Тип строится только по данным СберИндекса; Росстат и справочники нужны лишь для внешней проверки. Смена типа засчитывается, только если новое поведение держится не менее трёх месяцев.</p>
+        <div class="hero-actions">
+          <a class="pill pill-dark" href="#map-section">Открыть карту</a>
+          <a class="pill pill-light" href="#types">Паспорта типов</a>
+        </div>
+      </div>
+      <div class="kpis" id="kpis"></div>
+    </section>
+
+    <section class="covers" aria-label="Разделы">
+      <a class="cover" href="#about-method"><div class="cover-img"><img onerror="this.style.visibility='hidden'" src="img/network.webp" loading="lazy" alt="Иллюстрация: стеклянная сеть связей между узлами"></div><h3>Сеть и признаки</h3><p>Три слоя близости МО: поведение, со-движение и география</p></a>
+      <a class="cover" href="#methods"><div class="cover-img"><img onerror="this.style.visibility='hidden'" src="img/methods.webp" loading="lazy" alt="Иллюстрация: стеклянные фигуры, разложенные по группам"></div><h3>Методы</h3><p>Семь вариантов шести методов (KEFRiN в двух параметризациях)</p></a>
+      <a class="cover" href="#quality"><div class="cover-img"><img onerror="this.style.visibility='hidden'" src="img/quality.webp" loading="lazy" alt="Иллюстрация: стеклянные столбики и шкалы"></div><h3>Качество</h3><p>Индексы ICVI, фронт Парето и абляция слоёв графа</p></a>
+      <a class="cover" href="#dynamics"><div class="cover-img"><img onerror="this.style.visibility='hidden'" src="img/dynamics.webp" loading="lazy" alt="Иллюстрация: стеклянные потоки между уровнями"></div><h3>Динамика</h3><p>Подтверждённые переходы между типами за 24 месяца</p></a>
+      <a class="cover" href="#cases"><div class="cover-img"><img onerror="this.style.visibility='hidden'" src="img/cases.webp" loading="lazy" alt="Иллюстрация: стеклянные объекты под увеличительной линзой"></div><h3>Кейсы</h3><p>Паводок в Орске, апрель 2023, объединения МО, маркетплейсы</p></a>
+    </section>
+
+    <!-- 2. Карта -->
+    <section id="map-section" class="section">
+      <h2>Карта типов</h2>
+      <p class="section-lede">Выберите месяц или запустите анимацию. Клик по МО открывает его паспорт; клик по типу в легенде оставляет на карте только его. Слой неопределённости делает бледными МО, тип которых ненадёжен (бутстрэп-вероятность).</p>
+
+      <div class="map-controls">
+        <div class="ctrl-group month-ctrl">
+          <button id="play" class="btn btn-icon" type="button" aria-label="Воспроизвести">▶</button>
+          <input id="month-slider" type="range" min="0" max="23" value="23" step="1" aria-label="Месяц">
+          <output id="month-label" class="month-label">–</output>
+        </div>
+        <div class="ctrl-group">
+          <div class="seg" role="radiogroup" aria-label="Какие типы показывать">
+            <label><input type="radio" name="mode" value="confirmed" checked><span>Подтверждённые</span></label>
+            <label><input type="radio" name="mode" value="raw"><span>Сырые</span></label>
+          </div>
+          <label class="check"><input type="checkbox" id="uncertainty"> <span>Слой неопределённости</span></label>
+        </div>
+        <div class="ctrl-group search">
+          <input id="mo-search" list="mo-list" type="search" placeholder="Найти МО по названию…" autocomplete="off" aria-label="Поиск МО">
+          <datalist id="mo-list"></datalist>
+        </div>
+      </div>
+
+      <div class="map-wrap">
+        <div class="map-col">
+          <div id="legend" class="legend" aria-label="Легенда типов"></div>
+          <div id="highlight-note" class="highlight-note" hidden></div>
+          <div id="map" class="map" role="img" aria-label="Карта типов МО"></div>
+          <div id="map-tip" class="map-tip" hidden></div>
+          <p class="note" id="map-note"></p>
+          <p class="note">Число МО в выбранном месяце, включая 174 МО без полной истории; в паспортах типов – модальный тип 2024 г. по 2 016 МО.</p>
+        </div>
+        <aside id="passport" class="passport" aria-live="polite">
+          <div class="passport-empty">
+            <p class="muted">Паспорт МО</p>
+            <p>Кликните по муниципальному образованию на карте или найдите его через поиск.</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- 3. Паспорта типов -->
+    <section id="types" class="section">
+      <h2>Паспорта типов</h2>
+      <p class="section-lede">Профиль: отклонение типа от средней по стране в стандартных отклонениях (σ) по семи признакам кластеризации. Медианы – в исходных единицах. Типичные МО ближе всех к центру типа, пограничные – на границе с соседними типами. Внешние показатели (Росстат, справочник МО) в кластеризации не участвовали.</p>
+      <div id="type-cards" class="type-grid"></div>
+    </section>
+
+    <!-- 4. Динамика -->
+    <section id="dynamics" class="section">
+      <h2>Динамика</h2>
+      <p class="section-lede" id="dyn-lede"></p>
+      <div class="kpis small" id="dyn-kpis"></div>
+      <div class="card">
+        <div class="card-head">
+          <h3>Потоки между типами</h3>
+          <span class="muted" id="sankey-sub"></span>
+        </div>
+        <div id="sankey" class="chart chart-tall"></div>
+        <p class="note">Клик по потоку подсвечивает на карте МО этого перехода; клик по узлу – весь тип.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h3>Матрица переходов 2023-12 → 2024-12</h3><span class="muted">годовая, доля строки, %</span></div>
+          <div id="matrix" class="chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Размеры типов по месяцам</h3><span class="muted">число МО, подтверждённые типы</span></div>
+          <div id="sizes" class="chart"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>События жизненного цикла типов</h3><span class="muted">по Greene et al. (2010), сходство Жаккара</span></div>
+        <ol id="events" class="events"></ol>
+      </div>
+    </section>
+
+    <!-- 5. Методы -->
+    <section id="methods" class="section">
+      <h2>Методы и качество</h2>
+      <p class="section-lede" id="methods-lede"></p>
+      <div class="card" id="quality">
+        <div class="card-head"><h3>Индексы качества (ICVI)</h3><span class="muted">медиана по 24 месяцам; выделено лучшее значение в столбце</span></div>
+        <div class="table-wrap"><table id="icvi" class="data-table"></table></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h3>Фронт Парето: силуэт vs модулярность</h3><span class="muted">вправо-вверх – лучше</span></div>
+          <div id="pareto" class="chart"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Абляция слоёв графа</h3><span class="muted">что даёт каждый слой</span></div>
+          <div class="table-wrap"><table id="layers" class="data-table"></table></div>
+          <p class="note" id="methods-notes"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Кейсы -->
+    <section id="cases" class="section">
+      <h2>Кейсы</h2>
+      <div id="case-cards" class="case-grid"></div>
+    </section>
+
+    <!-- 6б. О методе -->
+    <section id="about-method" class="section">
+      <h2>О методе</h2>
+      <p class="section-lede">Подробности – в <a href="docs/report.pdf" data-pdf>отчёте</a>.</p>
+      <p class="note key-nums">η² зарплат 0,61; SW 0,218 и MQ 0,495 у выбранного метода; 963 подтверждённые смены; ARI онлайн-проверки 0,68</p>
+      <div class="accordion">
+        <details>
+          <summary>Признаки</summary>
+          <div class="acc-body"><p>Семь признаков на МО-месяц: состав трат (CLR-преобразование долей шести категорий) и уровень трат относительно страны. Признаки Росстата в кластеризацию не входят: на них идёт внешняя проверка, и она не должна быть круговой.</p></div>
+        </details>
+        <details>
+          <summary>Сеть муниципальных образований</summary>
+          <div class="acc-body"><p>Три слоя близости: поведение (сходство профилей трат), со-движение (лаговые корреляции приростов за прошлые 12 месяцев, общий тренд убран) и география (расстояния по автодорогам). Слои сливаются методом SNF (Wang et al., 2014) в одну сеть на каждый месяц.</p></div>
+        </details>
+        <details>
+          <summary>Выбор метода и числа типов</summary>
+          <div class="acc-body"><p>Методы сравниваются на одних и тех же признаках и графе по панели индексов качества (ICVI) с нулевыми моделями и бутстрэпом. Метод выбран по критериям: Парето-эффективность, отсутствие провалов, значимость, устойчивость и читаемость типов.</p></div>
+        </details>
+        <details>
+          <summary>Подтверждённые переходы</summary>
+          <div class="acc-body"><p>Помесячная метка шумит, поэтому смена типа засчитывается, только если новое поведение держится не менее трёх месяцев. Месяц, когда смена становится известна онлайн, хранится отдельно – без утечки будущего.</p></div>
+        </details>
+        <details>
+          <summary>Ограничения</summary>
+          <div class="acc-body"><p>Панель включает только МО с оценками, прошедшими порог качества (нет 8 регионов и части малых МО). Траты безналичные и только клиентов Сбера, что смещает уровень в пользу городов. Апрельский разрыв 2023 г. – методологический. Внутригородские территории Москвы и Петербурга образуют отдельный тип по построению данных. Подтверждение перехода ретроспективно на 2 месяца.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- 7. Подвал -->
+    <footer id="about" class="footer">
+      <p class="footer-note">Проект Pulsar для конкурса СберИндекса. Независимая работа автора; не является официальным ресурсом организаторов конкурса.</p>
+      <div class="footer-grid">
+        <div>
+          <h3>Автор</h3>
+          <p>Екатерина Алексанян<br><span class="muted">МГУ имени М. В. Ломоносова, факультет ВМК</span></p>
+        </div>
+        <div>
+          <h3>Материалы</h3>
+          <ul class="links">
+            <li><a href="https://github.com/estnafinema0/sberindex-pulsar">Репозиторий с кодом</a></li>
+            <li><a href="docs/report.pdf" data-pdf>Отчёт (PDF)</a></li>
+            <li><a href="data/meta.json">Данные лендинга (JSON)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Данные и лицензия</h3>
+          <p id="attribution">Данные: Лаборатория СберИндекс, CC BY-SA 4.0</p>
+          <p class="muted">Производные данные лендинга распространяются на условиях <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.ru">CC BY-SA 4.0</a>; код – по лицензии репозитория (MIT).</p>
+          <p class="muted" id="generated"></p>
+        </div>
+      </div>
+    </footer>
+</main>
+
+<div id="load-error" class="load-error" hidden></div>
+<div class="pdf-modal" id="pdf-modal" hidden>
+  <div class="pdf-box" role="dialog" aria-modal="true" aria-label="Отчёт PDF">
+    <div class="pdf-bar">
+      <a class="pill pill-light" href="docs/report.pdf" download>Скачать</a>
+      <button type="button" class="pill pill-dark" id="pdf-close">Закрыть</button>
+    </div>
+    <iframe title="Отчёт PDF" data-src="docs/report.pdf#view=FitH"></iframe>
+  </div>
+</div>
+<script src="js/app.js?v=14"></script>
+</body>
+</html>

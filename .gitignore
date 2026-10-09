@@ -1,0 +1,11 @@
+# data (лицензия CC BY-SA 4.0 + п. 9.2 Положения: данные организатора не публикуем)
+/data/
+!/data/README.md
+outputs/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+*.log
