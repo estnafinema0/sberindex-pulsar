@@ -40,11 +40,11 @@ Docker: `docker build -t pulsar . && docker run --rm -v $PWD/data:/app/data -v $
 ## Структура
 
 ```
-src/pulsar/     data · features · graphs · build_graphs · methods · align · icvi · evaluate
-                run_cluster · compare · dynamics · run_dynamics · interpret · run_interpret · external · geo · site
-configs/        data · features · graph · methods · compare · dynamics · interpret · external · geo · final
+src/pulsar/     data, features, graphs, build_graphs, methods, align, icvi, evaluate
+                run_cluster, compare, dynamics, run_dynamics, interpret, run_interpret, external, geo, site
+configs/        data, features, graph, methods, compare, dynamics, interpret, external, geo, final
 tests/          106 тестов (pytest)
-docs/           report · slides · research/ · data_audit · external_data
+docs/           report, slides, research/, data_audit, external_data
 site/           статичный лендинг (GitHub Pages)
 outputs/        артефакты прогона (не в репозитории)
 ```
