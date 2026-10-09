@@ -4,17 +4,25 @@ on:
     branches: [main]
     paths: ["site/**", ".github/workflows/pages.yml"]
   workflow_dispatch:
-permissions: { contents: read, pages: write, id-token: write }
-concurrency: { group: pages, cancel-in-progress: true }
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: { name: github-pages, url: ${{ steps.deployment.outputs.page_url }} }
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-      - run: mkdir -p public && cp -r site/* public/ && cp docs/report.pdf docs/slides.pdf public/docs/
+      - run: mkdir -p public && cp -r site/* public/ && mkdir -p public/docs && cp docs/report.pdf docs/slides.pdf public/docs/
       - uses: actions/upload-pages-artifact@v3
-        with: { path: public }
+        with:
+          path: public
       - id: deployment
         uses: actions/deploy-pages@v4
